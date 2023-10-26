@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Chat</title>
+
+    <style>
+        body {
+          text-align: center;
+        }
+      
+        .center {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          height: 30vh;
+        }
+      
+        input, button {
+          font-size: 48px;
+        }
+      </style>
+
+</head>
+<body>
+    <div class="center">
+        <input type="text" id="message" placeholder="Scan Here !"  onkeydown="onEnter(event)">
+        <!-- <button onclick="sendMessage()">Kirim</button> -->
+        <div id="chat"></div>
+    </div>
+
+    <script>
+        var socket = new WebSocket("ws://localhost:9191");
+
+        socket.onmessage = function(event) {
+            // var chat = document.getElementById("chat");
+            // chat.innerHTML = "<p>" + event.data + "</p>" + chat.innerHTML;
+
+            console.log('Hi')
+        };
+
+        function sendMessage() {
+            var messageInput = document.getElementById("message");
+            var message = messageInput.value;
+            socket.send(message);
+            messageInput.value = "";
+
+            console.log(message)
+        }
+
+        function onEnter(event) {
+        if (event.key === "Enter") {
+            event.preventDefault(); // Mencegah input line break yang umumnya terjadi dengan tombol Enter
+
+            // Panggil metode JavaScript yang ingin Anda eksekusi di sini.
+            sendMessage();
+        }
+    }
+
+    </script>
+</body>
+</html>

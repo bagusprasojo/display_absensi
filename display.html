@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Karyawan</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-white">
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6 p-5">
+            <h1 class="display-4">Profil Karyawan</h1>
+            <div class="mb-3">
+                <label class="form-label">NIP:</label>
+                <p class="fw-bold" id="nip">1234567890</p>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" >Nama:</label>
+                <p class="fw-bold" id="nama">John Doe</p>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Jabatan:</label>
+                <p class="fw-bold" id="jabatan">Manager</p>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" >Perusahaan:</label>
+                <p class="fw-bold" id="perusahaan">ABC Company</p>
+            </div>
+        </div>
+        <div class="col-md-6 p-5">
+            <img src="path_to_your_image.jpg" alt="Foto Karyawan" class="img-fluid rounded-circle">
+        </div>
+    </div>
+</div>
+
+    <script>
+        var socket = new WebSocket("ws://localhost:9191");
+
+        socket.onmessage = function(event) {
+            const jsonData = JSON.parse(event.data);
+            
+            var nipElement = document.getElementById("nip");
+            nipElement.innerHTML = jsonData[0].NIP;
+
+            var namaElement = document.getElementById("nama");
+            namaElement.innerHTML = jsonData[0].Nama;
+
+            var namaElement = document.getElementById("jabatan");
+            namaElement.innerHTML = jsonData[0].Jabatan;
+
+            var namaElement = document.getElementById("perusahaan");
+            namaElement.innerHTML = jsonData[0].Perusahaan;
+
+            console.log('Hi')
+        };
+    
+
+    </script>
+
+</body>
+</html>

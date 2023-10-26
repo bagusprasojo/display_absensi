@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Karyawan</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Daftar Hadir Undangan</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>NIP</th>
+                    <th>Nama</th>
+                    <th>Jabatan</th>
+                    <th>Perusahaan</th>
+                    <th>Tanggal</th>
+                </tr>
+            </thead>
+            <tbody id="tabelData">
+                <!-- <tr>
+                    <td>000001</td>
+                    <td>Erfan Zaenuddin</td>
+                    <td>COE Manager</td>
+                    <td>PT. Tiga Serangkai Inti Corpora</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>000002</td>
+                    <td>Jane Doe</td>
+                    <td>HR Manager</td>
+                    <td>ABC Company</td>
+                    <td></td>
+                </tr> -->
+                <!-- Baris data lainnya -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        var socket = new WebSocket("ws://localhost:9191");
+
+        socket.onopen = function(event) {
+            console.log('On Open');
+
+            const jsonData = JSON.parse(event.data);
+
+            var nip = jsonData[0].NIP;
+            var nama = jsonData[0].Nama;
+            var jabatan = jsonData[0].Jabatan;
+            var perusahaan = jsonData[0].Perusahaan;
+            var tanggal = jsonData[0].Tanggal;
+
+            // Buat elemen <tr> baru
+            var newRow = document.createElement("tr");
+
+            // Buat elemen-elemen <td> untuk data baru
+            var nipCell = document.createElement("td");
+            nipCell.textContent = nip;
+
+            var namaCell = document.createElement("td");
+            namaCell.textContent = nama;
+
+            var jabatanCell = document.createElement("td");
+            jabatanCell.textContent = jabatan;
+
+            var perusahaanCell = document.createElement("td");
+            perusahaanCell.textContent = perusahaan;
+
+            var tanggalCell = document.createElement("td");
+            tanggalCell.textContent = tanggal;
+
+            // Masukkan elemen-elemen <td> ke dalam <tr> baru
+            newRow.appendChild(nipCell);
+            newRow.appendChild(namaCell);
+            newRow.appendChild(jabatanCell);
+            newRow.appendChild(perusahaanCell);
+            newRow.appendChild(tanggalCell);
+
+            // Masukkan <tr> baru ke dalam tabel
+            var tabelData = document.getElementById("tabelData");
+            tabelData.insertBefore(newRow, tabelData.firstChild);
+        }
+        socket.onmessage = function(event) {
+            const jsonData = JSON.parse(event.data);
+
+            var nip = jsonData[0].NIP;
+            var nama = jsonData[0].Nama;
+            var jabatan = jsonData[0].Jabatan;
+            var perusahaan = jsonData[0].Perusahaan;
+            var tanggal = jsonData[0].Tanggal;
+
+            // Buat elemen <tr> baru
+            var newRow = document.createElement("tr");
+
+            // Buat elemen-elemen <td> untuk data baru
+            var nipCell = document.createElement("td");
+            nipCell.textContent = nip;
+
+            var namaCell = document.createElement("td");
+            namaCell.textContent = nama;
+
+            var jabatanCell = document.createElement("td");
+            jabatanCell.textContent = jabatan;
+
+            var perusahaanCell = document.createElement("td");
+            perusahaanCell.textContent = perusahaan;
+
+            var tanggalCell = document.createElement("td");
+            tanggalCell.textContent = tanggal;
+
+            // Masukkan elemen-elemen <td> ke dalam <tr> baru
+            newRow.appendChild(nipCell);
+            newRow.appendChild(namaCell);
+            newRow.appendChild(jabatanCell);
+            newRow.appendChild(perusahaanCell);
+            newRow.appendChild(tanggalCell);
+
+            // Masukkan <tr> baru ke dalam tabel
+            var tabelData = document.getElementById("tabelData");
+            tabelData.insertBefore(newRow, tabelData.firstChild);
+
+        };
+
+        document.getElementById("tambahData").addEventListener("click", function() {
+            // Generate data acak
+            var nip = Math.floor(Math.random() * 1000000).toString();
+            var nama = "Nama Acak";
+            var jabatan = "Jabatan Acak";
+            var perusahaan = "Perusahaan Acak";
+
+            // Buat elemen <tr> baru
+            var newRow = document.createElement("tr");
+
+            // Buat elemen-elemen <td> untuk data baru
+            var nipCell = document.createElement("td");
+            nipCell.textContent = nip;
+
+            var namaCell = document.createElement("td");
+            namaCell.textContent = nama;
+
+            var jabatanCell = document.createElement("td");
+            jabatanCell.textContent = jabatan;
+
+            var perusahaanCell = document.createElement("td");
+            perusahaanCell.textContent = perusahaan;
+
+            // Masukkan elemen-elemen <td> ke dalam <tr> baru
+            newRow.appendChild(nipCell);
+            newRow.appendChild(namaCell);
+            newRow.appendChild(jabatanCell);
+            newRow.appendChild(perusahaanCell);
+
+            // Masukkan <tr> baru ke dalam tabel
+            var tabelData = document.getElementById("tabelData");
+            tabelData.insertBefore(newRow, tabelData.firstChild);
+        });
+    </script>
+</body>
+</html>
