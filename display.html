@@ -30,7 +30,7 @@
             </div>
         </div>
         <div class="col-md-6 p-5">
-            <img src="path_to_your_image.jpg" alt="Foto Karyawan" class="img-fluid rounded-circle">
+            <img id="foto" src="https://picsum.photos/200/200" alt="Foto Karyawan" class="img-fluid rounded-circle">
         </div>
     </div>
 </div>
@@ -54,6 +54,8 @@
 
             var namaElement = document.getElementById("perusahaan");
             namaElement.innerHTML = jsonData[0].Perusahaan;
+
+            document.getElementById("foto").src = "https://picsum.photos/200/200";
 
             console.log('Hi')
         };
