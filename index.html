@@ -30,13 +30,12 @@
     </div>
 
     <script>
+        var isSudahSetNickName = false;
         var socket = new WebSocket("ws://localhost:9191");
-
+        socket.onopen = () => socket.send('/checkin');
+        
         socket.onmessage = function(event) {
-            // var chat = document.getElementById("chat");
-            // chat.innerHTML = "<p>" + event.data + "</p>" + chat.innerHTML;
-
-            console.log('Hi')
+            
         };
 
         function sendMessage() {
@@ -46,6 +45,7 @@
             messageInput.value = "";
 
             console.log(message)
+            
         }
 
         function onEnter(event) {

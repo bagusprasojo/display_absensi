@@ -42,47 +42,51 @@
     <script>
         var socket = new WebSocket("ws://localhost:9191");
 
-        socket.onopen = function(event) {
-            console.log('On Open');
+        socket.onopen = () => socket.send('/display');
 
-            const jsonData = JSON.parse(event.data);
+        // socket.onopen = function(event) {
+        //     console.log('On Open');
 
-            var nip = jsonData[0].NIP;
-            var nama = jsonData[0].Nama;
-            var jabatan = jsonData[0].Jabatan;
-            var perusahaan = jsonData[0].Perusahaan;
-            var tanggal = jsonData[0].Tanggal;
+        //     const jsonData = JSON.parse(event.data);
 
-            // Buat elemen <tr> baru
-            var newRow = document.createElement("tr");
+        //     var nip = jsonData[0].NIP;
+        //     var nama = jsonData[0].Nama;
+        //     var jabatan = jsonData[0].Jabatan;
+        //     var perusahaan = jsonData[0].Perusahaan;
+        //     var tanggal = jsonData[0].Tanggal;
 
-            // Buat elemen-elemen <td> untuk data baru
-            var nipCell = document.createElement("td");
-            nipCell.textContent = nip;
+        //     // Buat elemen <tr> baru
+        //     var newRow = document.createElement("tr");
 
-            var namaCell = document.createElement("td");
-            namaCell.textContent = nama;
+        //     // Buat elemen-elemen <td> untuk data baru
+        //     var nipCell = document.createElement("td");
+        //     nipCell.textContent = nip;
 
-            var jabatanCell = document.createElement("td");
-            jabatanCell.textContent = jabatan;
+        //     var namaCell = document.createElement("td");
+        //     namaCell.textContent = nama;
 
-            var perusahaanCell = document.createElement("td");
-            perusahaanCell.textContent = perusahaan;
+        //     var jabatanCell = document.createElement("td");
+        //     jabatanCell.textContent = jabatan;
 
-            var tanggalCell = document.createElement("td");
-            tanggalCell.textContent = tanggal;
+        //     var perusahaanCell = document.createElement("td");
+        //     perusahaanCell.textContent = perusahaan;
 
-            // Masukkan elemen-elemen <td> ke dalam <tr> baru
-            newRow.appendChild(nipCell);
-            newRow.appendChild(namaCell);
-            newRow.appendChild(jabatanCell);
-            newRow.appendChild(perusahaanCell);
-            newRow.appendChild(tanggalCell);
+        //     var tanggalCell = document.createElement("td");
+        //     tanggalCell.textContent = tanggal;
 
-            // Masukkan <tr> baru ke dalam tabel
-            var tabelData = document.getElementById("tabelData");
-            tabelData.insertBefore(newRow, tabelData.firstChild);
-        }
+        //     // Masukkan elemen-elemen <td> ke dalam <tr> baru
+        //     newRow.appendChild(nipCell);
+        //     newRow.appendChild(namaCell);
+        //     newRow.appendChild(jabatanCell);
+        //     newRow.appendChild(perusahaanCell);
+        //     newRow.appendChild(tanggalCell);
+
+        //     // Masukkan <tr> baru ke dalam tabel
+        //     var tabelData = document.getElementById("tabelData");
+        //     tabelData.insertBefore(newRow, tabelData.firstChild);
+
+        //     send('/checkin');
+        // }
         socket.onmessage = function(event) {
             const jsonData = JSON.parse(event.data);
 

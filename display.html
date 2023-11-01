@@ -38,6 +38,8 @@
     <script>
         var socket = new WebSocket("ws://localhost:9191");
 
+        socket.onopen = () => socket.send('/display_depan');
+
         socket.onmessage = function(event) {
             const jsonData = JSON.parse(event.data);
             

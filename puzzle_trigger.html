@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Chat</title>
+
+    <style>
+        body {
+          text-align: center;
+        }
+      
+        .center {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          height: 30vh;
+        }
+      
+        input, button {
+          font-size: 48px;
+        }
+      </style>
+
+</head>
+<body>
+    <button id="sendButton">Trigger Puzzle</button>
+
+    <script>
+        var socket = new WebSocket("ws://localhost:9191");
+        socket.onopen = () => socket.send('/puzzle_trigger');
+
+        socket.onmessage = function(event) {
+            // var chat = document.getElementById("chat");
+            // chat.innerHTML = "<p>" + event.data + "</p>" + chat.innerHTML;
+
+            console.log('Hi')
+        };
+
+        function sendMessage() {
+            const message = "PUZZLE";
+            socket.send("message");
+            console.log(message);
+        }    
+
+        // Menambahkan event listener untuk mengeksekusi sendMessage setelah dokumen selesai dimuat
+        // document.addEventListener("DOMContentLoaded", function() {
+        //     sendMessage();
+        // });
+
+        var sendButton = document.getElementById("sendButton");
+            sendButton.addEventListener("click", sendMessage);
+
+    </script>
+</body>
+</html>

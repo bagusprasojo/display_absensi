@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Player</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        video {
+            display: none;
+        }
+
+        #playButton {
+            position: absolute;
+            z-index: 1;
+            background-color: rgba(255, 255, 255, 0.5);
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <button id="playButton">Play Video</button>
+    <video id="videoPlayer" controls>
+        <source src="video/puzzle.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    
+    <script>
+        var socket = new WebSocket("ws://localhost:9191");
+        socket.onopen = () => socket.send('/puzzle');
+
+        const playButton = document.getElementById("playButton");
+        const videoPlayer = document.getElementById("videoPlayer");
+
+        function PlayVideo(){
+            videoPlayer.style.display = "block"; // Menampilkan elemen video
+            videoPlayer.requestFullscreen(); // Untuk mode fullscreen
+
+            // setTimeout(function() {
+                 videoPlayer.play(); // Memulai pemutaran video
+                
+            // }, 2000);
+
+            // videoPlayer.play();
+            playButton.style.display = "none"; // Sembunyikan tombol setelah video dimulai
+        }
+        
+        playButton.addEventListener("click", () => {
+            PlayVideo();
+        });
+
+        socket.onmessage = function(event) {
+    
+            console.log(event.data);
+            if (event.data === "Mainkan"){
+                playButton.click();
+            }
+            
+        };
+    </script>
+</body>
+</html>
