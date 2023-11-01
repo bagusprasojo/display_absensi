@@ -4,158 +4,161 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Karyawan</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-jgrowl/1.4.9/jquery.jgrowl.min.css">
 </head>
 <body>
     <div class="container mt-5">
         <h1>Daftar Hadir Undangan</h1>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>NIP</th>
-                    <th>Nama</th>
-                    <th>Jabatan</th>
-                    <th>Perusahaan</th>
-                    <th>Tanggal</th>
-                </tr>
-            </thead>
-            <tbody id="tabelData">
-                <!-- <tr>
-                    <td>000001</td>
-                    <td>Erfan Zaenuddin</td>
-                    <td>COE Manager</td>
-                    <td>PT. Tiga Serangkai Inti Corpora</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>000002</td>
-                    <td>Jane Doe</td>
-                    <td>HR Manager</td>
-                    <td>ABC Company</td>
-                    <td></td>
-                </tr> -->
-                <!-- Baris data lainnya -->
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered" id="table">
+                <thead>
+                    <tr>
+                        <th>Check</th>
+                        <th>NIP</th>
+                        <th>Sapaan</th>
+                        <th>Nama</th>
+                        <th>Perusahaan</th>
+                        <th>TTS</th>
+                        <th>Tanggal</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelData">
+                </tbody>
+            </table>
+        </div>
+        <button type="button" class="btn btn-sm btn-info" id="play-checked">Generate Checked</button><br>
+
+        <div class="input-group mt-5">
+            <select class="form-select" id="voiceselection"></select>
+            <button type="button" class="btn btn-sm btn-success" id="set-voice">Set Default Voice</button>
+        </div>
+        <div class="input-group mt-2">
+            <div class="form-floating">
+                <input class="form-control" type="text" name="input-manual" id="input-manual" placeholder="Tuliskan kata ...">
+                <label for="input-manual">Text to Speech</label>
+            </div>
+            <button type="button" class="btn btn-sm btn-success" id="play-manual">Play Speech</button>
+        </div>
     </div>
 
+    <!-- <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-jgrowl/1.4.9/jquery.jgrowl.min.js"></script>
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=47i1xMPf"></script>
     <script>
-        var socket = new WebSocket("ws://localhost:9191");
+        $(document).ready(function() {
+            responsiveVoice.setDefaultVoice("Indonesian Female");
+            var voicelist = responsiveVoice.getVoices();
+            var vselect = $("#voiceselection");
+            $.each(voicelist, function() {
+                if (this.name == "Indonesian Female") {
+                    vselect.append($("<option />").val(this.name).text(this.name).attr('selected', true));
+                } else {
+                    vselect.append($("<option />").val(this.name).text(this.name));
+                }
+            });
 
-        socket.onopen = function(event) {
-            console.log('On Open');
+            var table = $('#table').DataTable({
+                autoWidth: false,
+                columns: [
+                    {
+                        data: 'ID',
+                        render: function (data, type, row, meta) {
+                            return '<input class="form-check-input" type="checkbox" name="check[]" id="check" value="'+data+'">';
+                        }
+                    },
+                    { data: 'NIP' },
+                    { data: 'Sapaan' },
+                    { data: 'Nama' },
+                    { data: 'Perusahaan' },
+                    { data: 'TTS' },
+                    { data: 'Tanggal' },
+                    {
+                        data: 'ID',
+                        render: function (data, type, row, meta) {
+                            return '<button class="btn btn-sm btn-success" id="btn-play">Play Speech</button><br><button class="btn btn-sm btn-danger" id="btn-cancel" onclick="responsiveVoice.cancel();">Cancel Speech</button>';
+                        }
+                    }
+                ],
+                "order": [[ 6, 'desc' ]],
+            });
+    
+            var socket = new WebSocket("ws://localhost:9191");
 
-            const jsonData = JSON.parse(event.data);
+            socket.onmessage = function(event) {
+                const jsonData = JSON.parse(event.data);
+                table.row.add(jsonData[0]).draw();
+            };
 
-            var nip = jsonData[0].NIP;
-            var nama = jsonData[0].Nama;
-            var jabatan = jsonData[0].Jabatan;
-            var perusahaan = jsonData[0].Perusahaan;
-            var tanggal = jsonData[0].Tanggal;
+            $('#table tbody').on('click', '#btn-play', function () {
+                console.log(this);
+                const data = table.row($(this).closest('tr')).data();
+                const text = 'Selamat Datang ' + data.Nama + ', ' + data.Jabatan + ' dari ' + data.Perusahaan;
+                responsiveVoice.speak(text);
+            });
 
-            // Buat elemen <tr> baru
-            var newRow = document.createElement("tr");
+            $('#play-manual').on('click', function () {
+                const text = $('#input-manual').val();
+                if (text.length > 0) {
+                    responsiveVoice.speak(text);
+                } else {
+                    alert('Kosong atau tidak valid');
+                }
+            });
 
-            // Buat elemen-elemen <td> untuk data baru
-            var nipCell = document.createElement("td");
-            nipCell.textContent = nip;
+            $('#play-checked').on('click', function () {
+                let data = [];
+                let text = '';
+                if ($('input#check:checked').length > 0) {
+                    $('input#check:checked').each(function() {
+                        data.push(table.row($(this).closest('tr')).data());
+                    });
+                } else {
+                    alert('Belum ada data dicentang');
+                }
+                if (data.length > 0) {
+                    const groupedData = data.reduce((acc, item) => {
+                        acc[item.Perusahaan] = acc[item.Perusahaan] || { Perusahaan: item.Perusahaan, Data: [] };
+                        acc[item.Perusahaan].Data.push(item);
+                        return acc;
+                    }, {});
 
-            var namaCell = document.createElement("td");
-            namaCell.textContent = nama;
+                    const result = Object.values(groupedData);
+                    
+                    text = result.map(group => {
+                        let employees = group.Data.map(employee => employee.TTS).join(', ');
+                        const lastIndex = employees.lastIndexOf(', ');
+                        const count = group.Data.length;
+                        if (lastIndex !== -1) {
+                            if (count == 2) {
+                                employees = employees.substring(0, lastIndex) + ' dan ' + employees.substring(lastIndex + 2);
+                            } else {
+                                employees = employees.substring(0, lastIndex) + ', dan ' + employees.substring(lastIndex + 2);
+                            }
+                        }
+                        return `Selamat datang ${employees} dari ${group.Perusahaan}.`;
+                    }).join(' ');
+                }
+                $('#input-manual').val(text);
+            })
 
-            var jabatanCell = document.createElement("td");
-            jabatanCell.textContent = jabatan;
-
-            var perusahaanCell = document.createElement("td");
-            perusahaanCell.textContent = perusahaan;
-
-            var tanggalCell = document.createElement("td");
-            tanggalCell.textContent = tanggal;
-
-            // Masukkan elemen-elemen <td> ke dalam <tr> baru
-            newRow.appendChild(nipCell);
-            newRow.appendChild(namaCell);
-            newRow.appendChild(jabatanCell);
-            newRow.appendChild(perusahaanCell);
-            newRow.appendChild(tanggalCell);
-
-            // Masukkan <tr> baru ke dalam tabel
-            var tabelData = document.getElementById("tabelData");
-            tabelData.insertBefore(newRow, tabelData.firstChild);
-        }
-        socket.onmessage = function(event) {
-            const jsonData = JSON.parse(event.data);
-
-            var nip = jsonData[0].NIP;
-            var nama = jsonData[0].Nama;
-            var jabatan = jsonData[0].Jabatan;
-            var perusahaan = jsonData[0].Perusahaan;
-            var tanggal = jsonData[0].Tanggal;
-
-            // Buat elemen <tr> baru
-            var newRow = document.createElement("tr");
-
-            // Buat elemen-elemen <td> untuk data baru
-            var nipCell = document.createElement("td");
-            nipCell.textContent = nip;
-
-            var namaCell = document.createElement("td");
-            namaCell.textContent = nama;
-
-            var jabatanCell = document.createElement("td");
-            jabatanCell.textContent = jabatan;
-
-            var perusahaanCell = document.createElement("td");
-            perusahaanCell.textContent = perusahaan;
-
-            var tanggalCell = document.createElement("td");
-            tanggalCell.textContent = tanggal;
-
-            // Masukkan elemen-elemen <td> ke dalam <tr> baru
-            newRow.appendChild(nipCell);
-            newRow.appendChild(namaCell);
-            newRow.appendChild(jabatanCell);
-            newRow.appendChild(perusahaanCell);
-            newRow.appendChild(tanggalCell);
-
-            // Masukkan <tr> baru ke dalam tabel
-            var tabelData = document.getElementById("tabelData");
-            tabelData.insertBefore(newRow, tabelData.firstChild);
-
-        };
-
-        document.getElementById("tambahData").addEventListener("click", function() {
-            // Generate data acak
-            var nip = Math.floor(Math.random() * 1000000).toString();
-            var nama = "Nama Acak";
-            var jabatan = "Jabatan Acak";
-            var perusahaan = "Perusahaan Acak";
-
-            // Buat elemen <tr> baru
-            var newRow = document.createElement("tr");
-
-            // Buat elemen-elemen <td> untuk data baru
-            var nipCell = document.createElement("td");
-            nipCell.textContent = nip;
-
-            var namaCell = document.createElement("td");
-            namaCell.textContent = nama;
-
-            var jabatanCell = document.createElement("td");
-            jabatanCell.textContent = jabatan;
-
-            var perusahaanCell = document.createElement("td");
-            perusahaanCell.textContent = perusahaan;
-
-            // Masukkan elemen-elemen <td> ke dalam <tr> baru
-            newRow.appendChild(nipCell);
-            newRow.appendChild(namaCell);
-            newRow.appendChild(jabatanCell);
-            newRow.appendChild(perusahaanCell);
-
-            // Masukkan <tr> baru ke dalam tabel
-            var tabelData = document.getElementById("tabelData");
-            tabelData.insertBefore(newRow, tabelData.firstChild);
+            $('#set-voice').on('click', function () {
+                const text = vselect.val();
+                console.log(text);
+                if (text.length > 0) {
+                    responsiveVoice.setDefaultVoice(text);
+                    alert('Berhasil Set Default Voice');
+                } else {
+                    alert('Kosong atau tidak valid');
+                }
+            })
         });
     </script>
 </body>
