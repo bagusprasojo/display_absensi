@@ -88,7 +88,7 @@
                 "order": [[ 6, 'desc' ]],
             });
     
-            var socket = new WebSocket("ws://192.168.20.40:9191");
+            var socket = new WebSocket("wss://192.168.21.5/wss2/");
             socket.onopen = () => socket.send('/display');
 
             socket.onmessage = function(event) {

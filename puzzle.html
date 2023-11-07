@@ -35,34 +35,39 @@
 
 <body>
     <button id="playButton">Play Video</button>
-    <video id="videoPlayer" controls>
-        <source src="video/puzzle.mp4" type="video/mp4">
+    <video id="videoPlayer" controls src="video/puzzle.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
 
     <script>
-        var socket = new WebSocket("ws://192.168.20.40:9191");
+        var socket = new WebSocket("wss://192.168.21.5/wss2/");
         socket.onopen = () => socket.send('/puzzle');
 
         const playButton = document.getElementById("playButton");
         const videoPlayer = document.getElementById("videoPlayer");
 
-        function PlayVideo() {
-            videoPlayer.style.display = "block"; // Menampilkan elemen video
-            videoPlayer.requestFullscreen(); // Untuk mode fullscreen
+        function PlayVideo(src) {
+            videoPlayer.src = src;
+            videoPlayer.style.display = "block";
+            videoPlayer.requestFullscreen();
             videoPlayer.play();
             playButton.style.display = "none";
         }
 
         playButton.addEventListener("click", () => {
-            PlayVideo();
+            PlayVideo('video/puzzle.mp4');
+        });
+
+        document.addEventListener("click", function(){
+            socket.send('halaman puzzle sudah diclick');
         });
 
         socket.onmessage = function (event) {
-
             console.log(event.data);
-            if (event.data === "Mainkan") {
-                playButton.click();
+            if (event.data === "Mainkan Puzzle") {
+                PlayVideo('video/puzzle.mp4');
+            } else {
+                PlayVideo('video/peresmian.mp4');
             }
 
         };
