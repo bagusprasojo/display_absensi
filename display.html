@@ -63,7 +63,6 @@
             document.getElementById("data").style.display = 'block';
             
             const jsonData = JSON.parse(event.data);
-            console.log(document.getElementById("nama").value);
             document.getElementById("nama").value = jsonData[0].Nama;
             document.getElementById("perusahaan").value = jsonData[0].Perusahaan;
 

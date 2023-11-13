@@ -15,12 +15,16 @@
         </div>
         <div class="input-group mt-2">
             <div class="form-floating">
-                <input class="form-control" type="text" name="input-manual" id="input-manual" placeholder="Tuliskan kata ...">
+                <textarea class="form-control" type="text" name="input-manual" id="input-manual" placeholder="Tuliskan kata ..."></textarea>
                 <label for="input-manual">Text to Speech</label>
             </div>
             <button type="button" class="btn btn-sm btn-success" id="play-manual">Play Speech</button>
         </div><br><hr>
         <h1>Daftar Hadir Undangan</h1>
+        <div class="my-3">
+            <label class="h5">Total Undangan: <span id="total-undangan">0</span></label><br>
+            <label class="h5">Hadir: <span id="kehadiran">0</span></label>
+        </div>
         <div class="d-flex justify-content-between my-3">
             <button type="button" class="btn btn-sm btn-info" id="play-checked">Generate Checked</button>
             <button type="button" class="btn btn-sm btn-success" id="check-all">Check All</button>
@@ -32,11 +36,10 @@
                     <tr>
                         <th>Check</th>
                         <th>No Undangan</th>
-                        <th>Sapaan</th>
                         <th>Nama</th>
                         <th>Perusahaan</th>
-                        <th>TTS</th>
                         <th>Tanggal</th>
+                        <th>TTS</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -76,11 +79,10 @@
                         }
                     },
                     { data: 'NIP' },
-                    { data: 'Sapaan' },
                     { data: 'Nama' },
                     { data: 'Perusahaan' },
-                    { data: 'TTS' },
                     { data: 'Tanggal' },
+                    { data: 'TTS' },
                     {
                         data: 'ID',
                         render: function (data, type, row, meta) {
@@ -94,7 +96,7 @@
                         className: "text-center"
                     }
                 ],
-                "order": [[ 6, 'desc' ]],
+                "order": [[ 4, 'desc' ]],
             });
     
             var socket = new WebSocket("wss://192.168.21.5/wss2/");
@@ -103,12 +105,14 @@
             socket.onmessage = function(event) {
                 const jsonData = JSON.parse(event.data);
                 table.row.add(jsonData[0]).draw();
+                $('#total-undangan').html(jsonData['total']);
+                $('#kehadiran').html(jsonData['hadir']);
             };
 
             $('#table tbody').on('click', '#btn-play', function () {
-                console.log(this);
                 const data = table.row($(this).closest('tr')).data();
                 const text = 'Selamat Datang ' + data.TTS + ' dari ' + data.Perusahaan;
+                $(this).closest('tr').addClass('table-success');
                 responsiveVoice.speak(text);
             });
 
@@ -127,6 +131,7 @@
                 if ($('input#check:checked').length > 0) {
                     $('input#check:checked').each(function() {
                         data.push(table.row($(this).closest('tr')).data());
+                        $(this).closest('tr').addClass('table-success');
                     });
                 } else {
                     alert('Belum ada data dicentang');
@@ -141,6 +146,7 @@
                     const result = Object.values(groupedData);
                     
                     text = result.map(group => {
+                        let genText = '';
                         let employees = group.Data.map(employee => employee.TTS).join(', ');
                         const lastIndex = employees.lastIndexOf(', ');
                         const count = group.Data.length;
@@ -151,7 +157,13 @@
                                 employees = employees.substring(0, lastIndex) + ', dan ' + employees.substring(lastIndex + 2);
                             }
                         }
-                        return `Selamat datang ${employees} dari ${group.Perusahaan}.`;
+                        genText = `Selamat datang ${employees}`;
+                        if (group.Perusahaan) {
+                            genText += ` dari ${group.Perusahaan}.`;
+                        } else {
+                            genText += `.`;
+                        }
+                        return genText;
                     }).join(' ');
                 }
                 $('#input-manual').val(text);
@@ -163,7 +175,6 @@
 
             $('#uncheck-all').on('click', function () {
                 const len = $('[name="check[]"]:checked').length;
-                // console.log('Checked: '+len);
                 if (len > 0) {
                     $('[name="check[]"]:checked').prop('checked', false);
                 }
@@ -171,7 +182,6 @@
 
             $('#set-voice').on('click', function () {
                 const text = vselect.val();
-                console.log(text);
                 if (text.length > 0) {
                     responsiveVoice.setDefaultVoice(text);
                     alert('Berhasil Set Default Voice');
