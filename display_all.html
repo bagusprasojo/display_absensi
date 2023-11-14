@@ -86,7 +86,7 @@
                     {
                         data: 'ID',
                         render: function (data, type, row, meta) {
-                            return '<button class="btn btn-sm btn-success" id="btn-play">Play Speech</button><br><button class="btn btn-sm btn-danger" id="btn-cancel" onclick="responsiveVoice.cancel();">Cancel Speech</button>';
+                            return '<button class="btn btn-sm btn-success" id="btn-play">Play</button><br><button class="btn btn-sm btn-danger" id="btn-cancel" onclick="responsiveVoice.cancel();">Cancel</button>';
                         }
                     }
                 ],
@@ -111,7 +111,10 @@
 
             $('#table tbody').on('click', '#btn-play', function () {
                 const data = table.row($(this).closest('tr')).data();
-                const text = 'Selamat Datang ' + data.TTS + ' dari ' + data.Perusahaan;
+                let text = 'Selamat Datang ' + data.TTS;
+                if (data.Perusahaan) {
+                    text += ' dari ' + data.Perusahaan;
+                }
                 $(this).closest('tr').addClass('table-success');
                 responsiveVoice.speak(text);
             });
