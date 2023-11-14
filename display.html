@@ -6,11 +6,11 @@
     <title>Selamat Datang Undangan</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body {
+        /* body {
             font-size: xx-large;
-        }
+        } */
 
-        @media (min-width: 1400px) {
+        /* @media (min-width: 1400px) {
             .h1, h1 {
                 font-size: calc(3rem + 2vw);
             }
@@ -22,24 +22,24 @@
             .h5, h5 {
                 font-size: calc(1rem + 2vw);
             }
-        }
+        } */
     </style>
 </head>
 <body>
     <div id="main" class="container-fluid d-flex align-items-center justify-content-center" style="height: 100vh;">
-        <div id="default" class="row text-center">
+        <div id="default" class="row text-center" style="display: none;">
             <div class="col">
                 <h1 class="display-1 fw-bold">Check In with Your QR Code</h1>
                 <h5 class="display-3 fw-medium">Show your QR Code to the Camera</h5>
                 <img src="image/default-qr.png" class="w-25" alt="QR Code">
             </div>
         </div>
-        <div id="data" class="row" style="display: none;">
+        <div id="data" class="row">
             <div class="col">
-                <h1 class="text-center display-3 fw-medium">Welcome to Grand Launching</h1>
-                <h4 class="text-center display-1 fw-bold">Tiga Serangkai SMART Office</h4>
-                <br>
-                <div class="mb-3 mt-5">
+                <h1 class="text-center display-3 fw-medium mb-3">Welcome to Grand Launching</h1>
+                <h4 class="text-center display-1 fw-bold mb-5">Tiga Serangkai SMART Office</h4>
+                <br><br>
+                <div class="my-5">
                     <div class="form-floating">
                         <input class="form-control fs-1 fw-bolder py-5" type="text" id="nama" style="letter-spacing: 2px;" disabled>
                         <label class="fs-5" for="nama">Nama Lengkap</label>
